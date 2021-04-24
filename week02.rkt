@@ -114,3 +114,34 @@
     (lambda (guess) (< (abs (- (f guess) guess)) 0.00001))
     (lambda (guess) (f guess)))
     first-guess))
+
+; Question 2
+(define (every f sent)
+  (if (empty? sent)
+      '()
+      (se (f (first sent)) (every f (bf sent)))))
+
+; Question 3
+(every (lambda (letter) (word letter letter)) 'purple)
+(every (lambda (number) (if (even? number) (word number number) number))
+       '(781 5 76 909 24))
+(keep even? '(781 4 76 909 24))
+(keep (lambda (letter) (member? letter 'aeiou)) 'bookkeeper)
+(keep (lambda (letter) (member? letter 'aeiou)) 'syzygy)
+; (keep (lambda (letter) (member? letter 'aeiou)) '(purple syzygy))
+(keep (lambda (wd) (member? 'e wd)) '(purple syzygy))
+
+; Extra for experts
+; Express fact procedure without using define, just using lambdas
+(define (fact n)
+  (if (= n 0)
+      1
+      (* n (fact (- n 1)))))
+
+((lambda (f) (f f))
+ (lambda (fact-gen)
+   (lambda (n)
+     (if (= n 0)
+         1
+         (* n ((fact-gen fact-gen) (- n 1)))))))
+  
