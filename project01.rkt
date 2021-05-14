@@ -129,3 +129,64 @@
   (or (equal? (last card) 'h) (equal? (last card) 'H)))
 
 ; test results:
+;> (valentine '(10s 8h) null)
+;#t
+;> (valentine '(10s 9h) null)
+;#f
+;> (valentine '(10s 6s) null)
+;#t
+;> (valentine '(10s 7s) null)
+;#f
+
+; 7. Generalize the strategy from question 6 by defining a function, suit-strategy
+; args: a suit (h, s, d, c), strategy when hand doesn't include suit, strategy when it does
+
+(define (suit-strategy suit strategy-without-suit strategy-with-suit)
+  (lambda (customer-hand dealer-up-card)
+    (if (has-suit? suit customer-hand)
+        (strategy-with-suit customer-hand dealer-up-card)
+        (strategy-without-suit customer-hand dealer-up-card))))
+
+(define (has-suit? suit cards)
+  (cond ((empty? cards) #f)
+        ((card-is-suit? suit (first cards)) #t)
+        (else (has-suit? suit (bf cards)))))
+
+(define (card-is-suit? suit card)
+  (equal? (last card) suit))
+
+(define (valentine2 customer-hand dealer-up-card)
+  ((suit-strategy 'h (stop-at 16) (stop-at 18)) customer-hand dealer-up-card))
+
+; test results:
+;> (valentine2 '(10s 8h) null)
+;#t
+;> (valentine2 '(10s 9h) null)
+;#f
+;> (valentine2 '(10s 6s) null)
+;#t
+;> (valentine2 '(10s 7s) null)
+;#f
+
+; 8. define function majority that takes 3 strategies as arguments
+(define (majority strategy1 strategy2 strategy3)
+  (lambda (customer-hand dealer-up-card)
+    (let ((r1 (strategy1 customer-hand dealer-up-card))
+          (r2 (strategy2 customer-hand dealer-up-card))
+          (r3 (strategy3 customer-hand dealer-up-card)))
+      (cond ((and (equal? r1 #t) (equal? r2 #t) #t))
+            ((and (equal? r1 #t) (equal? r3 #t) #t))
+            ((and (equal? r2 #t) (equal? r3 #t) #t))
+            (else #f)))))
+
+; test results:
+;> (play-n (majority stop-at-17 dealer-sensitive valentine) 100)
+;-15
+;> (play-n (majority stop-at-17 dealer-sensitive valentine) 100)
+;-14
+;> (play-n (majority stop-at-17 dealer-sensitive valentine) 100)
+;-11
+;> (play-n (majority stop-at-17 dealer-sensitive valentine) 100)
+;-1
+
+; 9. define the procedure reckless
